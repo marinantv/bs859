@@ -1,0 +1,44 @@
+#!/bin/bash
+
+module load plink/1.90b6.21
+module load R
+
+DATA=/projectnb/bs859/data/RheumatoidArthritis/final_project
+
+# check sex assignments
+plink --bfile $DATA/narac_hg19 --check-sex --set-hh-missing --out sexstat
+## Warning: 10855 het. haploid genotypes present (see freq1.hh ); many commands treat these as missing.
+### heterozygous haploid and nonmale Y chromosome genotype calls are logged to plink.hh and treated as missing by all analysis commands, 
+### but left undisturbed by --make-bed
+
+# check for individuals with elevated missing data rates or extremely high/low heterozygosity rate
+plink --bfile $DATA/narac_hg19 --het --out het
+
+# select individuals with sex problem
+grep "PROBLEM" sexstat.sexcheck > fail_sex_check.txt
+
+# compute allele frequencies
+plink --bfile $DATA/narac_hg19 --freq --out freq1
+
+# compute missing rates for individuals and variants
+plink --bfile $DATA/narac_hg19 --missing --out miss1
+
+# compute hardy-weinberg test for each variant
+plink --bfile $DATA/narac_hg19 --hardy --out hwe1
+
+# SNPs with hwe p<0.0001 in unaffected
+awk '($3=="UNAFF"&&$9<0.0001)||NR==1{print $0}'  hwe1.hwe>hwe.unaff.0001.txt
+## 3472 variants with p<0.0001 for the HWE test using unaffected controls
+
+awk 'NR==1||$6>0.03{print $0}' miss1.imiss>highmissingindiv.txt
+## 27 individuals who have missing genotype rates >3% (call rate <97%)
+
+
+## Turner et al. (2011) recommend removing poor-quality SNPs before running the sample genotyping efficiency,
+## so that fewer samples will be dropped from the analysis simply because they were genotyped with SNP assays that had poor performance
+
+# create filtered genotype
+plink --bfile $DATA/narac_hg19 --maf 0.01 --geno 0.05 --hwe 1e-6 --make-bed --out narac_almost
+
+#remove individuals 
+plink --bfile narac_almost --mind 0.05 -make-bed --out narac_final
