@@ -14,31 +14,87 @@ plink --bfile $DATA/narac_hg19 --check-sex --set-hh-missing --out sexstat
 # check for individuals with elevated missing data rates or extremely high/low heterozygosity rate
 plink --bfile $DATA/narac_hg19 --het --out het
 
+# how many snps in files
+plink --bfile $DATA/narac_hg19 --write-snplist
+
 # select individuals with sex problem
 grep "PROBLEM" sexstat.sexcheck > fail_sex_check.txt
 
+# remove failed sex individuals
+plink --bfile $DATA/narac_hg19 --remove fail_sex_check.txt --make-bed --out narac-sex_problems
+
 # compute allele frequencies
-plink --bfile $DATA/narac_hg19 --freq --out freq1
+plink --bfile narac-sex_problems --freq --out freq1
 
 # compute missing rates for individuals and variants
-plink --bfile $DATA/narac_hg19 --missing --out miss1
+plink --bfile narac-sex_problems --missing --out miss1
 
 # compute hardy-weinberg test for each variant
-plink --bfile $DATA/narac_hg19 --hardy --out hwe1
+plink --bfile narac-sex_problems --hardy --out hwe1
 
 # SNPs with hwe p<0.0001 in unaffected
 awk '($3=="UNAFF"&&$9<0.0001)||NR==1{print $0}'  hwe1.hwe>hwe.unaff.0001.txt
-## 3472 variants with p<0.0001 for the HWE test using unaffected controls
+## 3453 variants with p<0.0001 for the HWE test using unaffected controls
 
 awk 'NR==1||$6>0.03{print $0}' miss1.imiss>highmissingindiv.txt
 ## 27 individuals who have missing genotype rates >3% (call rate <97%)
 
-
+# remove high missing individuals
+plink --bfile narac-sex_problems --remove highmissingindiv.txt --make-bed --out narac-low_missing
 ## Turner et al. (2011) recommend removing poor-quality SNPs before running the sample genotyping efficiency,
 ## so that fewer samples will be dropped from the analysis simply because they were genotyped with SNP assays that had poor performance
 
+
 # create filtered genotype
-plink --bfile $DATA/narac_hg19 --maf 0.01 --geno 0.05 --hwe 1e-6 --make-bed --out narac_almost
+plink --bfile narac-low_missing --maf 0.01 --geno 0.05 --hwe 1e-6 --not-chr X --make-bed --out narac_almost
+#Total genotyping rate is 0.993119.
+#17677 variants removed due to missing genotype data (--geno).
+#Warning: --hwe observation counts vary by more than 10%, due to the X
+#chromosome.  You may want to use a less stringent --hwe p-value threshold for X
+#chromosome variants.
+#--hwe: 668 variants removed due to Hardy-Weinberg exact test.
+#22887 variants removed due to minor allele threshold(s)
+#(--maf/--max-maf/--mac/--max-mac).
+#503044 variants and 2028 people pass filters and QC.
+#Among remaining phenotypes, 852 are cases and 1176 are controls.
+
+# create filtered genotype not for chrX 
+plink --bfile narac-low_missing --maf 0.01 --geno 0.05 --hwe 1e-6 --not-chr X --make-bed --out narac_almostX
+#Total genotyping rate is 0.993079.
+#17417 variants removed due to missing genotype data (--geno).
+#--hwe: 666 variants removed due to Hardy-Weinberg exact test.
+#22028 variants removed due to minor allele threshold(s)
+#(--maf/--max-maf/--mac/--max-mac).
+#490973 variants and 2028 people pass filters and QC.
+#Among remaining phenotypes, 852 are cases and 1176 are controls.
 
 #remove individuals 
-plink --bfile narac_almost --mind 0.05 -make-bed --out narac_final
+plink --bfile narac_almostX --mind 0.05 -make-bed --out narac_final
+#0 people removed due to missing genotype data (--mind).
+
+#make all together
+#plink --bfile narac-low_missing --maf 0.01 --geno 0.05 --mind 0.05 --hwe 1e-6 --not-chr X --make-bed --out narac_almost_full
+#didn´t make a difference
+#we'll stick to narac_final
+
+# check missingness
+plink --bfile narac_final --test-missing --out cctest
+#314480 snps with missing data
+
+#SNPs with small p-values
+awk 'NR==1||($5 < 0.05) {print $0}' cctest.missing >cctest05.missing
+#41292 snps with small p-val
+#variants with a lot of missingness between cases and controls are cause for concern
+#if missingness is not random by genotype this could induce an association so let's remove them
+plink --bfile narac_final --exclude cctest05.missing --make-bed --out narac_no_miss
+
+#compute heterozygote deficit
+plink --bfile narac_no_miss --het --out Fstat
+R --vanilla<Fstat.R>Fstat.log
+#   Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
+#-0.0269400 -0.0009348  0.0038770  0.0042202  0.0089215  0.0785200 
+#no real obvious relationship between missingness and Fstat
+
+plink --bfile narac_no_miss --test-mishap --out narac_no_genomiss
+
+
