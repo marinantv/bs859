@@ -22,6 +22,13 @@ plink --bfile narac_geno --hardy --out hardy
 
 plink --bfile narac_geno --indep-pairwise 10000 5000 0.2 --out idp0.2
 
+#plink --bfile narac_geno --extract idp02.prune.in --genome --min 0.05 --out narac_pruned
+
+plink --bfile narac_geno –-exclude idp0.2.prune.out --genome --min 0.05 --out idp05
+
+
+
+
 ###################
 ###################
 plink --bfile narac --check-sex --out sexstat
