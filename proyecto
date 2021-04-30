@@ -1,0 +1,23 @@
+#!/bin/bash
+
+module load plink/1.90b6.21
+module load R
+
+DATA=/projectnb/bs859/data/RheumatoidArthritis/final_project
+
+plink --bfile $DATA/narac_hg19 --set-hh-missing --make-bed --out narac
+
+plink --bfile narac --freq --out freq
+
+plink --bfile narac --missing --out miss
+
+plink --bfile narac --hardy --out hwe
+
+#step 2
+plink --bfile narac --geno 0.01 --make-bed --out narac_geno
+
+plink --bfile narac_geno --missing --out narac_missing
+
+plink --bfile narac_geno --hardy --out hardy
+
+plink --bfile narac_geno --indep-pairwise 10000 5000 0.2 --out idp0.2
