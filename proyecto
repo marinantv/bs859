@@ -13,6 +13,30 @@ plink --bfile narac --missing --out miss
 
 plink --bfile narac --hardy --out hwe
 
+plink --bfile narac --check-sex --out sexstat
+
+grep "PROBLEM" sexstat.sexcheck > fail_sex_check.txt
+
+# remove failed sex individuals
+plink --bfile narac --remove fail_sex_check.txt --make-bed --out narac_sex
+
+awk '($3=="UNAFF"&&$9<0.0001||NR==1{print $0}' hwe.hwe>hwe.unaff.0001.txt
+
+awk 'NR==1||$6>0.03{print $0}' miss.imiss>highmissingindiv.txt
+
+plink --bfile narac_sex --maf 0.01 --geno 0.05 --hwe 1e-4 --not-chr X --make-bed --out narac_sex2
+#18313 variants removed due to missing genotype data
+
+plink --bfile narac_sex2 --mind 0.05 -make-bed --out narac_sex3
+#0 people removed due to missing genotype data (--mind).
+
+# check for individuals with elevated missing data rates or extremely high/low heterozygosity rate
+plink --bfile narac_sex3 --het --out het
+
+
+
+
+
 #step 2
 plink --bfile narac --geno 0.01 --make-bed --out narac_geno
 
@@ -26,17 +50,45 @@ plink --bfile narac_geno --indep-pairwise 10000 5000 0.2 --out idp0.2
 
 plink --bfile narac_geno –-exclude idp0.2.prune.out --genome --min 0.05 --out idp05
 
+plink --bfile narac_sex3 --remove highmissingindiv.txt --make-bed --out narac_sex4
+
+# check missingness
+plink --bfile narac_sex4 --test-missing --out cctest
+#313265snps with missing data
+
+#SNPs with small p-values
+awk 'NR==1||($5 < 0.05) {print $0}' cctest.missing >cctest05.missing
+#40893 snps with small p-val
+
+#same as cctest05.missing
+awk '$5 < 0.05 {print $2}' cctest.missing >SNP_List.txt
+
+#variants with a lot of missingness between cases and controls are cause for concern
+#if missingness is not random by genotype this could induce an association so let's remove them
+plink --bfile narac_sex4 --exclude SNP_List.txt --make-bed --out narac_sex5
+
+#compute heterozygote deficit
+plink --bfile narac_sex5 --het --out Fstat
+R --vanilla<Fstat.R>Fstat.log
+#    Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+#-0.026950 -0.001022  0.003815  0.004116  0.008792  0.078500 
+
+plink --bfile narac_sex5 --indep-pairwise 10000 5000 0.2 --out idpw
+
+plink --bfile narac_sex5 –-exclude idpw.prune.out --genome --min 0.05 --out ibd05
+
+
+
+
+
+
+
 
 
 
 ###################
 ###################
-plink --bfile narac --check-sex --out sexstat
 
-grep "PROBLEM" sexstat.sexcheck > fail_sex_check.txt
-
-# remove failed sex individuals
-plink --bfile narac --remove fail_sex_check.txt --make-bed --out narac_sex
 
 # check for individuals with elevated missing data rates or extremely high/low heterozygosity rate
 plink --bfile narac_sex --maf 0.01 --geno 0.05 --hwe 1e-6 --not-chr X --make-bed --out narac_sex2
