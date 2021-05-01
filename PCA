@@ -414,3 +414,4 @@ awk '$2<-0.01&&($22=="Case"||$22=="Control"){print $0}' Clean.evec> outliers1.tx
 
 smartpca -p Outliers.par > Final.out
 
+94 outliers removed
