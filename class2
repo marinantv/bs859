@@ -1,0 +1,35 @@
+module load plink/1.90b6.21
+module load R
+
+DATADIR=/projectnb/bs859/data/tgen
+plink --bfile $DATADIR/TGEN --freq --allow-no-sex --out freq1 
+awk '$5 == 0 {print $2}' freq1.frqx>noA1.txt
+plink --bfile $DATADIR/TGEN --maf 0.01 --geno 0.05 --mind 0.05 --hwe 1e-6 --allow-no-sex --make-bed --out TGEN2
+
+
+awk 'NR==1||($5 < 0.0001) {print $0}' cctest.missing >cctest01.missing
+
+sort -t, -nk5 cctest01.missing
+awk '$5 < 0.0001 {print $2}' cctest.missing >SNP_List.txt
+
+
+plink --bfile TGEN2 --exclude SNP_List.txt --make-bed --out TGEN3
+
+plink --bfile TGEN3 --het --out Fstat
+R --vanilla<Fstat.R>Fstat.log
+
+
+plink --bfile TGEN3 --indep-pairwise 10000 5000 0.2 --out idpw
+plink --bfile TGEN3 –-exclude idpw.prune.out --genome --min 0.05 --out ibd05
+
+awk 'NR==1||($10 >0.25) {print $0}' ibd05.genome>idb25.genome
+
+plink --bfile TGEN3 --remove final_list.txt --make-bed --out TGEN4
+
+awk 'NR!=1' duni.txt>duni2.txt
+awk '{print $2}' duni2.txt>final_list.txt
+
+plink --bfile TGEN4 --het --out Fstat
+R --vanilla<Fstat.R>Fstat.log
+
+awk '$6 < -0.16 {print $2}' Fstat.het>lowest
