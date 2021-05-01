@@ -1,0 +1,92 @@
+
+module load R 
+module load plink/1.90b6.4
+DATADIR=/projectnb/bs859/data/plink_tutorial/wgas3
+plink --bfile $DATADIR/wgas3  --logistic  beta --ci .95 --out logistnoadj
+head  logistnoadj.assoc.logistic
+plink   --bfile $DATADIR/wgas3 --covar $DATADIR/newcov.txt --covar-name pop --logistic beta  --ci .95 --out logistadjpop
+head logistadjpop.assoc.logistic
+awk 'NR==1||$5=="ADD"{print $0}' logistadjpop.assoc.logistic>popadj.add.txt
+head popadj.add.txt
+plink   --bfile $DATADIR/wgas3 --covar $DATADIR/newcov.txt --covar-name pop --logistic beta hide-covar  --ci 0.95 --out logista
+djpop-hidecov
+plink   --bfile $DATADIR/wgas3 --covar $DATADIR/newcov.txt --covar-name PC1,PC2 --logistic beta  --ci .95 --out logistadjPC12
+head logistadjPC12.assoc.logistic
+plink   --bfile $DATADIR/wgas3 --covar $DATADIR/newcov.txt --covar-name PC1,PC2 --logistic beta hide-covar --ci .95 --out logis
+tadjPC12-hidecov
+head logistadjPC12-hidecov.assoc.logistic
+## now we will try a mixed model using GMMAT with the plink tutorial data
+##Get set up to do glmm model for binary trait (mixed model with genetic relationship matrix)
+## Recall that we computed pairwise IBD sharing using this command, which created a 
+## file with each pair of individuals as a line, and the IBD sharing estimates:
+## note that we are using the full genome-wide fileset to produce the IBD estimates, after
+## pruning to remove variants in high LD 
+
+##prune to remove variants in high LD:
+plink --bfile $DATADIR/wgas3  --indep-pairwise 10000  5000  0.2 
+
+plink --bfile $DATADIR/wgas3 --exclude plink.prune.out --genome --out ibd 
+wc ibd.genome
+head ibd.genome
+
+##This command makes a genetic relationship matrix, rather than printing out the pairwise information 
+## in the previous command:
+plink --bfile $DATADIR/wgas3 --exclude plink.prune.out --make-rel square --out grm
+#
+#creates 2 files: 
+# grm.rel.id -- the order of the ids for the GRM file
+
+head grm.rel.id
+
+# grm.rel -- the actual genetic relationship matrix.  For our data, with 89 individuals, 
+# it is an 89x89  matrix.  Let's look at the first 5 individuals submatrix:
+
+cut -f1-5 grm.rel |head -n 5
+
+R --vanilla <testGMMAT.R>testGMMAT.log
+
+##creates 2 output files --  test.glmm.score.nocov, test.glmm.score.PC1PC2cov
+## the first is the mixed model with no covariates, the second had PC1 and PC2 covariations
+## let's look at the first few lines of each.
+head test.glmm.score.nocov
+head test.glmm.score.PC1PC2cov
+#these awk commands replace the "PVAL" column header with "P", and the "POS" with "BP" . 
+#This will make it match the P-value and base pair column headers from PLINK output.
+##this will be useful when we use the R program qqplot.R to do a qqplot and manhattan plot 
+##of the p-values
+awk 'NR==1{$4="BP";$11="P"};{print $0}' test.glmm.score.nocov>glmm.score.nocov.txt
+awk 'NR==1{$4="BP";$11="P"};{print $0}' test.glmm.score.PC1PC2cov>glmm.score.PC1PC2cov.txt
+
+
+
+##Let's compare the effect estimates for one of the most associated variants:  rs11204005 
+awk '(NR==1||($2=="rs11204005")){print $0}' logistadjpop-hidecov.assoc.logistic
+awk '(NR==1||($2=="rs11204005")){print $0}' logistadjPC12-hidecov.assoc.logistic
+
+awk '(NR==1||($2=="rs11204005")){print $0}' glmm.score.nocov.txt
+awk '(NR==1||($2=="rs11204005")){print $0}' glmm.score.PC1PC2cov.txt
+
+ 
+
+
+#QQplots
+R --vanilla --args  logistnoadj.assoc.logistic crude ADD < qqplot.R > qqplot_crude.out
+R --vanilla --args  logistadjpop-hidecov.assoc.logistic popadj ADD < qqplot.R > qqplot_popadj.out
+R --vanilla --args  logistadjPC12-hidecov.assoc.logistic PC12adj ADD < qqplot.R > qqplot_PC12adj.out
+
+R --vanilla --args glmm.score.nocov.txt "glmm nocovariates" <qqplot.R>qq_glmmnocov.log
+R --vanilla --args glmm.score.PC1PC2cov.txt "glmm PC1PC2covariates" <qqplot.R>qq_glmmPC1PC2cov.log
+
+
+
+### alternative tool for making qq plots (using Umich qqplot code):
+
+R --vanilla --args logistnoadj.assoc.logistic noadj ADD <qq_umich_gc.R>qq_noadj_umich.log
+R --vanilla --args logistadjpop-hidecov.assoc.logistic popadj ADD <qq_umich_gc.R>qq_popadj_umich.log
+R --vanilla --args glmm.score.nocov.txt glmmnocov  <qq_umich_gc.R>qq_glm.nocov.log
+R --vanilla --args glmm.score.PC1PC2cov.txt glmmPC1PC2cov  <qq_umich_gc.R>qq_glm.PC1PC2cov.log
+
+
+##Manhattan plots
+R --vanilla --args  logistnoadj.assoc.logistic "unadjusted analysis" unadj_manhattan < gwaplot.R  >unadj_gwa.log
+R --vanilla --args  glmm.score.PC1PC2cov.txt "GLMM PC1 and PC2 adjusted analysis" GLMM_PC12_manhattan < gwaplot.R  >glmmPC1PC2_gwa.log
