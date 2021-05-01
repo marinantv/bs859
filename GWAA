@@ -9,3 +9,17 @@ awk 'NR==1{print "IID FID PCA1  PCA2  PCA3  PCA4  PCA5  PCA6  PCA7  PCA8  PCA9  
 PCACOVAR=/projectnb/bs859/spr21/users/marinant/Final/PCA/PCAcovar.txt
 
 plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out intento1
+plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --logistic beta --ci .95 --out pcaonly
+plink --bfile $NARAC --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out sexonly
+
+plink --bfile $NARAC --covar covariates.cov --covar-name PCA1, PCA2, PCA3, sex --logistic beta --ci .95 --out fullcovar
+
+
+awk 'NR!=1{print $0}' covariates.txt>Covariates.txt
+
+awk 'NR==1{print "# IID FID RA sex SEN antiCCP IgM PCA1 PCA2 PCA3 PCA4 PCA5 PCA6 PCA7 PCA8 PCA9 PCA10 PCA11 PCA12 PCA13 PCA14 PCA15 PCA16 PCA17 PCA18 PCA19 PCA20 status"};NR>1{print $0}' Cov2.txt>covariables.txt
+
+
+plink --bfile $$NARAC --exclude /projectnb/bs859/spr21/users/marinant/Final/idpw.prune.out --make-rel square --out grm
+plink --bfile $DATADIR/wgas3 --exclude plink.prune.out --make-rel
+square --out grm
