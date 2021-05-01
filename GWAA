@@ -1,3 +1,6 @@
+module load R
+module load plink/1.90b6.4
+
 NARAC=/projectnb/bs859/spr21/users/marinant/Final/narac
 DATA=/projectnb/bs859/data/RheumatoidArthritis/final_project
 
@@ -8,19 +11,26 @@ paste col1.txt Clean.evec > PCA_covar.txt
 awk 'NR==1{print "IID FID PCA1  PCA2  PCA3  PCA4  PCA5  PCA6  PCA7  PCA8  PCA9  PCA10 PCA11 PCA12 PCA13 PCA14 PCA15 PCA16 PCA17 PCA18 PCA19 PCA20 status"};NR>1{print $0}' PCA_covar.txt>PCAcovar.txt
 PCACOVAR=/projectnb/bs859/spr21/users/marinant/Final/PCA/PCAcovar.txt
 
-plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out intento1
-plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --logistic beta --ci .95 --out pcaonly
-plink --bfile $NARAC --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out sexonly
+#plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out intento1
+#plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --logistic beta --ci .95 --out pcaonly
+#plink --bfile $NARAC --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out sexonly
 
-plink --bfile $NARAC --covar covariates_table.txt --covar-name PCA1, PCA2, PCA3, sex --logistic beta --ci .95 --out fullcovar
+plink --bfile $NARAC --covar covariates_table.txt --covar-name PCA1, PCA2, PCA3, sex --logistic beta hide-covar --ci .95 --out fullcovar
 
-covariates_table.txt
+#THIS IS THE FINAL COVARIATE FILEcovariates_table.txt
 
-awk 'NR!=1{print $0}' covariates.txt>Covariates.txt
+#awk 'NR!=1{print $0}' covariates.txt>Covariates.txt
 
-awk 'NR==1{print "# IID FID RA sex SEN antiCCP IgM PCA1 PCA2 PCA3 PCA4 PCA5 PCA6 PCA7 PCA8 PCA9 PCA10 PCA11 PCA12 PCA13 PCA14 PCA15 PCA16 PCA17 PCA18 PCA19 PCA20 status"};NR>1{print $0}' Cov2.txt>covariables.txt
+#awk 'NR==1{print "# IID FID RA sex SEN antiCCP IgM PCA1 PCA2 PCA3 PCA4 PCA5 PCA6 PCA7 PCA8 PCA9 PCA10 PCA11 PCA12 PCA13 PCA14 PCA15 PCA16 PCA17 PCA18 PCA19 PCA20 status"};NR>1{print $0}' Cov2.txt>covariables.txt
 
 
 plink --bfile $$NARAC --exclude /projectnb/bs859/spr21/users/marinant/Final/idpw.prune.out --make-rel square --out grm
-plink --bfile $DATADIR/wgas3 --exclude plink.prune.out --make-rel
-square --out grm
+
+#males only covariate file
+awk 'NR==1||$4==1{print $0}' covariates_table.txt>covariates_men.txt
+#females only covariate
+awk 'NR==1||$4==2{print $0}' covariates_table.txt>covariates_women.txt
+
+plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out men_only 
+plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out women_only       
+
