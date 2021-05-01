@@ -12,8 +12,9 @@ plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --covar $DATA/n
 plink --bfile $NARAC --covar $PCACOVAR --covar-name PC1,PC2,PCA3 --logistic beta --ci .95 --out pcaonly
 plink --bfile $NARAC --covar $DATA/narac.cov --covar-name sex --logistic beta --ci .95 --out sexonly
 
-plink --bfile $NARAC --covar covariates.cov --covar-name PCA1, PCA2, PCA3, sex --logistic beta --ci .95 --out fullcovar
+plink --bfile $NARAC --covar covariates_table.txt --covar-name PCA1, PCA2, PCA3, sex --logistic beta --ci .95 --out fullcovar
 
+covariates_table.txt
 
 awk 'NR!=1{print $0}' covariates.txt>Covariates.txt
 
