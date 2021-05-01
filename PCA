@@ -1,0 +1,416 @@
+CLASS3=/project/bs859/class/class3/
+##load R, plink, and eigensoft 
+##smartpca is a program in the eigensoft module
+module load R
+module load plink/1.90b6.4
+module load eigensoft  
+
+plink --bfile narac_qc --maf 0.005 --make-bed --out narac2
+#2 variants removed due to missing genotype data
+
+#not removing chrX bc we're interested in it
+#pruning
+plink --bfile narac2 --indep-pairwise 10000  5000 0.2 --out pruned2
+#350239 of 449084 variants removed.
+plink --bfile narac2 --extract pruned2.prune.in --chr 1-22 --make-bed --out narac3
+
+#########
+
+plink --bfile narac_qc --maf 0.01 --geno 0.1 -hwe 1e-3 --make-bed --out Narac
+
+plink --bfile Narac --indep-pairwise 10000  5000 0.2 --out Pruned
+# 349161 of 447880 variants removed.
+
+plink --bfile Narac --extract Pruned.prune.in --chr 1-22 --make-bed --out Clean
+# 98717 variants remaining
+
+
+
+#wont delete snps AT CG
+smartpca -p Clean.par > Clean.out
+
+R --vanilla --args Clean.evec 1 2 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 3 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 4 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 5 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 6 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 1 20 20 <plotPCs.R
+#2
+R --vanilla --args Clean.evec 2 3 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 4 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 5 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 6 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 2 20 20 <plotPCs.R
+#3
+R --vanilla --args Clean.evec 3 4 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 5 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 6 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 3 20 20 <plotPCs.R
+#4
+R --vanilla --args Clean.evec 4 5 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 6 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 4 20 20 <plotPCs.R
+#5
+R --vanilla --args Clean.evec 5 6 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 5 20 20 <plotPCs.R
+#6
+R --vanilla --args Clean.evec 6 7 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 6 20 20 <plotPCs.R
+#7
+R --vanilla --args Clean.evec 7 8 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 7 20 20 <plotPCs.R
+#8
+R --vanilla --args Clean.evec 8 9 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 8 20 20 <plotPCs.R
+#9
+R --vanilla --args Clean.evec 9 10 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 9 20 20 <plotPCs.R
+#10
+R --vanilla --args Clean.evec 10 11 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 10 20 20 <plotPCs.R
+#11
+R --vanilla --args Clean.evec 11 12 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 11 20 20 <plotPCs.R
+#12
+R --vanilla --args Clean.evec 12 13 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 12 20 20 <plotPCs.R
+#13
+R --vanilla --args Clean.evec 13 14 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 13 20 20 <plotPCs.R
+#14
+R --vanilla --args Clean.evec 14 15 20 <plotPCs.R
+R --vanilla --args Clean.evec 14 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 14 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 14 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 14 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 14 20 20 <plotPCs.R
+#15
+R --vanilla --args Clean.evec 15 16 20 <plotPCs.R
+R --vanilla --args Clean.evec 15 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 15 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 15 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 15 20 20 <plotPCs.R
+#16
+R --vanilla --args Clean.evec 16 17 20 <plotPCs.R
+R --vanilla --args Clean.evec 16 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 16 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 16 20 20 <plotPCs.R
+#17
+R --vanilla --args Clean.evec 17 18 20 <plotPCs.R
+R --vanilla --args Clean.evec 17 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 17 20 20 <plotPCs.R
+#18
+R --vanilla --args Clean.evec 18 19 20 <plotPCs.R
+R --vanilla --args Clean.evec 18 20 20 <plotPCs.R
+#19
+R --vanilla --args Clean.evec 19 20 20 <plotPCs.R
+
+
+
+
+###
+# PC1,3,4 is significantly different between cases and controls
+# To avoid spurious associations, all association analyses should include PC1 3 4 as a covariate
+
+# maybe also 5
+
+awk '($6<-0.01&&($22=="Case"||$22=="Control"){print $0}' Clean.evec> Outliers5.txt
+
+awk '$2<-0.01&&($7=="Case"||$7=="Control"){print $0}' narac3.evec>outliers1.txt
+awk '$3<-0.01&&($7=="Case"||$7=="Control"){print $0}' narac3.evec>outliers2.txt
+awk '$4<-0.01&&($7=="Case"||$7=="Control"){print $0}' narac3.evec>outliers3.txt
+awk '$5<-0.01&&($7=="Case"||$7=="Control"){print $0}' narac3.evec>outliers4.txt
+awk '$6<-0.01&&($7=="Case"||$7=="Control"){print $0}' narac3.evec>outliers5.txt
+
+#PCA 1 3 4
+
+
+
+
+
+#look at example parameter file
+cat test.par
+#run smartpca  using the parameter file test.par
+smartpca -p test.par > test.out
+head test.out
+
+#Plot PCs by case status  - 
+#I wrote an R script to do this that is
+# somewhat flexible.  The command takes 4 arguements:
+# 1) The name of the output file from smartpca
+# 2 and 3) the two PCs you want to plot on x and y axes, respectively
+# 4) Number of PCs in the file 
+# this script assumes the output is from smartpca, so the 
+# first column is the individual ID and the last column is 
+# case status (from the plink fam file used to run smartpca)
+# produces a simple scatterplot with name arg1.PC.arg2.arg3.jpeg 
+R --vanilla --args test.evec 1 2 10 <plotPCs.R
+R --vanilla --args test.evec 1 3 10 <plotPCs.R
+R --vanilla --args test.evec 2 3 10 <plotPCs.R
+
+
+# Print the first column of the file test.evec:
+awk '{print $1}' test.evec
+
+#We will add population information to evec file so we can plot the 
+#PCs by origin of the sample instead of case status.  
+#Note the individual IDs all start with 
+#either JA or CH.  JA==Japan, and CH==China.
+#Since I want to use my R script to do the plot, I have to replace case
+#status with JA and CH but leave the other columns where my script
+#expects them to be.
+
+awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, substr($1,1,2)}' test.evec>test.evec2
+
+#last column of test.evec2 should now be CH or JA to indicate 
+#the sample's population of origin, and columns 1-11 
+#are identical to test.evec:
+head test.evec2
+tail test.evec2 
+##the only other difference is that now the file has a single space delimiter.
+
+#replot PCs, this time individuals are colored by 
+# population instead of case status-- 
+R --vanilla --args test.evec2 1 2 10 <plotPCs.R
+R --vanilla --args test.evec2 1 3 10 <plotPCs.R
+R --vanilla --args test.evec2 2 3 10 <plotPCs.R
+
+########################################### 
+##Analyses with TGEN cleaned data set below
+
+## get short names for the directories we will be using in the next analyses:
+DATADIR=/projectnb/bs859/data/tgen/cleaned
+HAPMAPDIR=/projectnb/bs859/data/tgen/hapmap
+
+##Use awk get a list of the SNPs in the TGEN_cleaned map (.bim) file where the two alleles are A and T,  or C and G:
+awk '($5=="A"&&$6=="T")||($5=="T"&&$6=="A")||($5=="G"&&$6=="C")||($5=="C"&&$6=="G"){print $2}' $DATADIR/TGEN_cleaned.bim > atcgSNPs_omit.txt
+head atcgSNPs_omit.txt
+#How many SNPs are A/T or G/C?  
+wc atcgSNPs_omit.txt
+
+
+
+
+##Remove this list of SNPs from the TGEN_cleaned file set, and create a new file set called TGEN_cleaned1 
+##(this file set will be in your current working directory)
+plink   --bfile $DATADIR/TGEN_cleaned --exclude atcgSNPs_omit.txt --make-bed --out TGEN_cleaned1 --allow-no-sex
+
+#how many SNPs are in the updated fileset?  Can look at the plink output, or use wc to check the bim file:
+wc TGEN_cleaned1.bim
+
+#Now, we prune:  This plink command looks for SNP pairs with r2>0.2 in 
+#the first set of 10000 variants, removes one frome each pair, then 
+#slides over 5000 variants and does the same thing
+
+plink --bfile TGEN_cleaned1 --indep-pairwise 10000 5000 0.2 --out prune0.2 --allow-no-sex
+##how many variants do we keep?
+wc prune0.2.prune.in
+## Keep the pruned-in variants, and keep only autosomal variants (chr 1-22)
+## and create a new file set called TGEN_cleaned1a:
+plink --bfile TGEN_cleaned1 --extract prune0.2.prune.in --chr 1-22 --make-bed --out TGEN_cleaned1a --allow-no-sex
+
+wc TGEN_cleaned1a.bim
+
+
+##Now we will attempt to merge the hapmap CEU data wtih our TGEN data.   
+
+plink   --bfile TGEN_cleaned1a --bmerge $HAPMAPDIR/ceu_tgen --make-bed --out merge1
+
+##Since there were mismatched alleles, we need to "flip" our data for some variants,  before we can do the merge.  The *.missnp file gives the
+##list of SNPs plink found that did not have matching alleles:
+wc merge1-merge.missnp
+head merge1-merge.missnp
+
+# Flip the alleles of the list of snps, and make a new file set called TGEN_cleaned2:
+plink --bfile TGEN_cleaned1a --flip merge1-merge.missnp --make-bed --out TGEN_cleaned2
+#try to merge with the hapmap CEU again:
+plink --bfile TGEN_cleaned2 --bmerge $HAPMAPDIR/ceu_tgen  --make-bed  --out merge2
+##remove the 2 remaining problematic variants. We don't know exactly what the issue is, but need all of these for the PCA:
+plink --bfile TGEN_cleaned2 --exclude merge2-merge.missnp --make-bed --out TGEN_cleaned3 --allow-no-sex
+
+##merge the TGEN data with each of the 3 hapmap files and include only the variants in the TGEN file 
+##create the list of variants we want to keep after merging:
+cut -f2 TGEN_cleaned3.bim>keepsnps.txt  #list of variants in the TGEN_cleaned3 file
+# Merge TGEN cleaned data with Hapmap CEU
+plink --bfile TGEN_cleaned3 --allow-no-sex --bmerge $HAPMAPDIR/ceu_tgen --extract keepsnps.txt --make-bed --out merge3
+#Merge the TGEN+CEU data with the hapmap CHBJPT samples:
+plink --bfile merge3 --allow-no-sex --bmerge $HAPMAPDIR/chbjpt_tgen --extract keepsnps.txt --make-bed --geno 0.03 --out merge4
+#THere were a few more  problem SNPs in this merge.  We will exclude them from the TGEN+CEU merged file and then re-merge with CHBJPT:
+plink --bfile merge3 --allow-no-sex --exclude merge4-merge.missnp --make-bed --out merge3a
+plink --bfile merge3a --allow-no-sex --bmerge $HAPMAPDIR/chbjpt_tgen --extract keepsnps.txt  --make-bed --geno 0.03 --out merge4
+
+##now, merge the TGEN+CEU+CHBJPT with hapmap YRI:
+plink --bfile merge4 --allow-no-sex --bmerge $HAPMAPDIR/yri_tgen  --extract keepsnps.txt --make-bed --geno 0.03 --out merge5
+
+#how many variants, and how many individuals, do we have in our final merged fileset? 
+wc merge5.bim
+wc merge5.fam
+
+##note that the phenotype column in merge5.fam has 1 and 2 for controls and cases from tgen;  in the hapmap files, I gave
+## the CEU phenotype= 3, the CHB/JPT phenotype =4, and the YRI phenotype = 5.  THis will make it easier to plot the results of the PCA
+more merge5.fam
+
+##pca on hapmap and tgen data
+
+## look at the smartpca hapmap parameter file that I provided.  Confirm that it specifies the analyses we want to do:
+cat hapmap.par
+## run smartpca using the hapmap-tgen merged file set:
+smartpca -p hapmap.par > hapmaptgen.out
+
+##look at the output (we put it in the file hapmaptgen.out)
+more hapmaptgen.out
+
+## take a quick look at the file that holds the PCs computed by smartpca:
+## Note that the last column of the file is the phenotype from the *.fam file we used to run the PCA
+## smartpca translates the "1" into "Control" and the "2" into "Case" in the evec file:
+more merge5.evec
+
+## Plot the first first three PCs by case/control/Hapmap population 
+
+R --vanilla --args merge5.evec 1 2 10 <plotPCs.R
+R --vanilla --args merge5.evec 1 3 10 <plotPCs.R
+R --vanilla --args merge5.evec 2 3 10 <plotPCs.R
+
+# identify the tgen data set outliers (selected PC values based on looking at the previous plot)
+# note that first column is familyid:id, and 2nd--11th columns are the 10 PCs, and column 12 is the phenotype/hapmap population  
+awk '$2<-0.01&&($12=="Case"||$12=="Control"){print $0}' merge5.evec> outliers.txt
+## who are the outliers?
+cat outliers.txt
+
+awk '$2<-0.01&&($22=="Case"||$22=="Control"){print $0}' Clean.evec> outliers1.txt
+
+smartpca -p Outliers.par > Final.out
+
