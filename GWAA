@@ -24,13 +24,55 @@ plink --bfile $NARAC --covar covariates_table.txt --covar-name PCA1, PCA2, PCA3,
 #awk 'NR==1{print "# IID FID RA sex SEN antiCCP IgM PCA1 PCA2 PCA3 PCA4 PCA5 PCA6 PCA7 PCA8 PCA9 PCA10 PCA11 PCA12 PCA13 PCA14 PCA15 PCA16 PCA17 PCA18 PCA19 PCA20 status"};NR>1{print $0}' Cov2.txt>covariables.txt
 
 
-plink --bfile $$NARAC --exclude /projectnb/bs859/spr21/users/marinant/Final/idpw.prune.out --make-rel square --out grm
+#plink --bfile $$NARAC --exclude /projectnb/bs859/spr21/users/marinant/Final/idpw.prune.out --make-rel square --out grm
 
 #males only covariate file
 awk 'NR==1||$4==1{print $0}' covariates_table.txt>covariates_men.txt
 #females only covariate
 awk 'NR==1||$4==2{print $0}' covariates_table.txt>covariates_women.txt
 
-plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out men_only 
-plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out women_only       
+
+#logistic associations
+
+#plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out men1_only 
+#plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3 --logistic beta hide-covar --ci .95 --out women_only       
+
+plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3 --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out men_only 
+plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3 --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out women_only_missing   
+
+#full covar
+R --vanilla --args fullcovar.assoc.logistic full_covar ADD < qqplot.R > qqplot_fullcovar.out
+
+fullcovar.assoc.logistic  men_only.assoc.logistic  sexonly.assoc.logistic  women_only.assoc.logistic
+
+R --vanilla --args men_only.assoc.logistic men_covar ADD < qqplot.R > qqplot_mencovar.out
+R --vanilla --args women_only.assoc.logistic women_covar ADD < qqplot.R > qqplot_womencovar.out
+
+R --vanilla --args women_only_missing.assoc.logistic women_covar_missing ADD < qqplot.R > qqplot_womencovar_missing.out
+
+
+
+
+#####################################
+###  this one seems to work best  ###
+
+#####################################
+plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out men
+
+R --vanilla --args men.assoc.logistic men ADD < qqplot.R > qqplot_men.out
+R --vanilla --args men.assoc.logistic Men ADD <qq_umich_gc.R>coolqq_men.log
+
+# women
+
+plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out women 
+
+R --vanilla --args women.assoc.logistic women ADD < qqplot.R > qqplot_women.out
+R --vanilla --args women.assoc.logistic Women ADD <qq_umich_gc.R>coolqq_women.log
+
+
+## manhattan plots
+
+R --vanilla --args  men.assoc.logistic "Men" men_manhattan < gwaplot.R  >men_gwa.log
+R --vanilla --args  women.assoc.logistic "Women" women_manhattan < gwaplot.R  >women_gwa.log
+
 
