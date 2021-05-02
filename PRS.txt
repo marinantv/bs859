@@ -1,0 +1,32 @@
+module load R/3.6.0
+module load prsice
+Rscript $SCC_PRSICE_BIN/PRSice.R --dir . \
+    --prsice $SCC_PRSICE_BIN/PRSice \
+    --base /projectnb/bs859/spr21/users/marinant/Final/METAL/META_final1.tbl  \
+    --target /projectnb/bs859/spr21/users/marinant/Final/narac  \
+    --stat Zscore \
+    --se SE \
+    --snp MarkerName \
+    --A1 Allele1 \
+    --A2 Allele2 \
+    --pvalue P-value \
+    --binary-target T \
+    --cov-file /projectnb/bs859/spr21/users/marinant/Final/GWAA/Cov2.txt \
+    --cov-col PCA1,,PCA2,PCA4,SEN \
+--out NARAC1
+#    --quantile 5 \
+#    --quant-ref 1 \
+Rscript $SCC_PRSICE_BIN/PRSice.R --dir . \
+    --prsice $SCC_PRSICE_BIN/PRSice \
+    --base /projectnb/bs859/data/RheumatoidArthritis/final_project/RA_GWASmeta_TransEthnic_v2.txt.gz  \
+    --target /projectnb/bs859/spr21/users/marinant/Final/narac  \
+    --stat Zscore \
+    --beta \
+     --snp Markername \
+    --A1 Effect_allele \
+    --A2 Other_allele \
+    --pvalue P-value \
+    --cov-file /projectnb/bs859/data/tgen/cleaned/TGEN_cleaned_pcs.txt \
+    --cov-col PC2,PC6,PC8 \
+    --binary-target T \
+     --out cogfunc_base_TGEN_target
