@@ -1,0 +1,46 @@
+WOMEN=/projectnb/bs859/spr21/users/marinant/Final/GWAA/women.assoc.logistic
+MEN=/projectnb/bs859/spr21/users/marinant/Final/GWAA/men.assoc.logistic
+
+# Meta-analysis weighted by standard error does not work well
+# when different studies used very different transformations
+# If we wanted to use inverse variance weights, we would un-comment
+# the next line:
+# SCHEME   STDERR
+# Not sure if genomic control is a good idea, given the large
+# number of true associations in these three regions.  If we were doing
+# a GWAS, and wanted to estimate genomic control lambda from the analysis,
+# and then adjust each study by its genomic control lambda, 
+# we would uncomment this line:
+# GENOMICCONTROL ON
+# Note in this example, we instead set the genomic control lambda for each 
+# study (based on the published GWAS), rather than estimating it from our
+# data.  These data are not genome-wide, so we can't estimate the lambda
+# from the test statistics 
+# To help identify allele flips, it can be useful to track
+# allele frequencies in the meta-analysis.  To do that, we can
+# uncomment the next two lines:
+# AVERAGEFREQ ON
+# MINMAXFREQ ON
+
+MARKER   SNP
+WEIGHT   N
+ALLELE   A1
+FREQ     EFFECT_ALLELE_FREQ
+EFFECT   BETA
+STDERR   SE
+PVAL     P
+GENOMICCONTROL 1.064
+PROCESS /projectnb/bs859/spr21/users/marinant/Final/GWAA/men.assoc.logistic
+
+MARKER   SNP
+DEFAULTWEIGHT  4108
+ALLELE   AL1 AL2
+FREQ     FREQ1
+EFFECT   EFFECT
+STDERR   SE
+PVAL     PVALUE
+GENOMICCONTROL 1.061
+PROCESS /projectnb/bs859/data/meta/METAL_example/magic_SARDINIA.tbl
+
+OUTFILE METAANALYSIS_GC_ .tbl
+ANALYZE
