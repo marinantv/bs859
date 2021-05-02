@@ -1,0 +1,24 @@
+DATADIR=/projectnb/bs859/data/meta/METAL_example
+ls $DATADIR
+
+head $DATADIR/DGI_three_regions.txt
+head $DATADIR/magic_SARDINIA.tbl
+
+zcat $DATADIR/MAGIC_FUSION_Results.txt.gz |head
+
+more metal.txt
+module load metal
+
+metal metal.txt > metal.log
+cat metal.log
+cat METAANALYSIS1.TBL.info
+
+##get the study specific results for rs560887:
+
+zcat $DATADIR/MAGIC_FUSION_Results.txt.gz |head -n 1
+zgrep rs560887 $DATADIR/MAGIC_FUSION_Results.txt.gz 
+
+head -n 1 $DATADIR/DGI_three_regions.txt
+grep rs560887 $DATADIR/DGI_three_regions.txt
+head -n 1 $DATADIR/magic_SARDINIA.tbl
+grep rs560887 $DATADIR/magic_SARDINIA.tbl
