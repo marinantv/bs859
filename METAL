@@ -25,7 +25,7 @@
 
 MARKER   SNP
 WEIGHT   NMISS
-ALLELE   A_1
+ALLELE   A_1 A_2
 FREQ     FREQ
 EFFECT   BETA
 STDERR   SE
@@ -35,7 +35,7 @@ PROCESS /projectnb/bs859/spr21/users/marinant/Final/GWAA/girls.assoc.logistic
 
 MARKER   SNP
 WEIGHT   NMISS
-ALLELE   A_1
+ALLELE   A_1 A_2
 FREQ     FREQ
 EFFECT   BETA
 STDERR   SE
