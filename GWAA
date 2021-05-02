@@ -55,16 +55,16 @@ R --vanilla --args women_only_missing.assoc.logistic women_covar_missing ADD < q
 
 #####################################
 ###  this one seems to work best  ###
-
 #####################################
-plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA3, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out men
+
+plink --bfile $NARAC --covar covariates_men.txt --covar-name PCA1, PCA2, PCA4, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out men
 
 R --vanilla --args men.assoc.logistic men ADD < qqplot.R > qqplot_men.out
 R --vanilla --args men.assoc.logistic Men ADD <qq_umich_gc.R>coolqq_men.log
 
 # women
 
-plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA3, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out women 
+plink --bfile $NARAC --covar covariates_women.txt --covar-name PCA1, PCA2, PCA4, SEN --missing-phenotype -9 --logistic beta hide-covar --ci .95 --out women 
 
 R --vanilla --args women.assoc.logistic women ADD < qqplot.R > qqplot_women.out
 R --vanilla --args women.assoc.logistic Women ADD <qq_umich_gc.R>coolqq_women.log
