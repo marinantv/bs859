@@ -1,0 +1,68 @@
+DATA=/projectnb/bs859/data/RheumatoidArthritis/final_project
+
+module load R
+module load python2
+module load ldsc/2018-08-10
+
+##format summary statistics for ldsc
+
+##european
+munge_sumstats.py \
+--sumstats $DATA/RA_GWASmeta_European_v2.txt \
+--snp SNPID \
+--N-cas 14361 \
+--N-con 43923 \
+--a1 A1 \
+--a2 A2 \
+--signed-sumstats OR,1 \
+--out european
+
+##Asian
+munge_sumstats.py \
+--sumstats $DATA/RA_GWASmeta_Asian_v2.txt.gz \
+--snp SNPID \
+--N-cas 4873 \
+--N-con 17642 \
+--a1 A1 \
+--a2 A2 \
+--signed-sumstats OR_A1,1 \
+--out asian
+
+##Trans
+munge_sumstats.py \
+--sumstats $DATA/RA_GWASmeta_TransEthnic_v2.txt.gz \
+--snp SNPID \
+--N-cas 19234 \
+--N-con 66565 \
+--a1 A1 \
+--a2 A2 \
+--signed-sumstats OR_A1,1 \
+--out trans
+
+ldsc.py \
+--h2 european.sumstats.gz \
+--ref-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--w-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--out european_h2
+
+ldsc.py \
+--h2 asian.sumstats.gz \
+--ref-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--w-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--out asian_h2
+
+ldsc.py \
+--h2 trans.sumstats.gz \
+--ref-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--w-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--out trans_h2
+
+
+#Assume AD population prevalence is 0.01, specify the sample prevalence 0.314:
+ldsc.py \
+--h2 european_metal.sumstats.gz \
+--ref-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--w-ld-chr $LDSCORES_DIR/eur_w_ld_chr/ \
+--pop-prev 0.01 \
+--samp-prev 0.314 \
+--out metal_h2_prev.01
